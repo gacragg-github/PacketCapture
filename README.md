@@ -8,7 +8,7 @@ Can we inject 802.11 frames?  There are various types and many different modulat
 Bands: 2.4GHz / 5GHz / 6GHz adapters are represented; some only support specific bands, some WiFi4/5/6/6E, with varying channel width support (20/40/80/160MHz)
 
 ```
-#### System1: Debian11 with updated firmware via git and custom 6.0 kernel on x64 platform
+System1: Debian11 with updated firmware via git and custom 6.0 kernel on x64 platform
 Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center    Packets Adapter
   0       mon0  phy0      iwlwifi   monitor     Y 149 (5745MHz) 80MHz 5775 MHz       2817  00.0 Network controller: Intel Corporation Device 2725 (rev 1a)
   1      wlan0  phy0      iwlwifi   managed     N                                       0  00.0 Network controller: Intel Corporation Device 2725 (rev 1a)
@@ -24,7 +24,7 @@ Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center  
  11     wlan10 phy10     carl9170   monitor     Y 149 (5745MHz) 40MHz 5755 MHz       1059  Qualcomm Atheros Communications AR9170 802.11n
 ```
 
-#### System2: Kali Rolling with updated firmware via git and kernel 6.0.7-1kali1
+System2: Kali Rolling with updated firmware via git and kernel 6.0.7-1kali1
 ```
 Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center    Packets Adapter
   0       mon0  phy0      iwlwifi   monitor     Y 149 (5745MHz) 80MHz 5775 MHz       8179  Intel Corporation Wireless 8265 / 8275 (rev 78)
@@ -34,7 +34,7 @@ Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center  
 ```
 
 ```
-### Table of 802.11 Frame Types under test
+Table of 802.11 Frame Types under test
 Type - Subtype  Name                          Wireshark Display Filter
 ----------------------------------------------------------------------------
   0      0      Association Request           wlan.fc.type_subtype == 0x0000
