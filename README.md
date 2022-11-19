@@ -27,3 +27,58 @@ Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center  
 
 System2: Kali Rolling with updated firmware via git and 
 
+
+
+
+```
+Table of 802.11 Frame Types under test
+Type - Subtype  Name                          Wireshark Display Filter
+----------------------------------------------------------------------------
+  0      0      Association Request           wlan.fc.type_subtype == 0x0000
+  0      1      Association Response          wlan.fc.type_subtype == 0x0001
+  0      2      Reassociation Request         wlan.fc.type_subtype == 0x0002
+  0      3      Reassociation Response        wlan.fc.type_subtype == 0x0003
+  0      4      Probe Request                 wlan.fc.type_subtype == 0x0004
+  0      5      Probe Response                wlan.fc.type_subtype == 0x0005
+  0      6      Timing Advertisement          wlan.fc.type_subtype == 0x0006
+  0      8      Beacon                        wlan.fc.type_subtype == 0x0008
+  0      9      ATIM                          wlan.fc.type_subtype == 0x0009
+  0     10      Disassociation                wlan.fc.type_subtype == 0x000a
+  0     11      Authentication                wlan.fc.type_subtype == 0x000b
+  0     12      Deauthentication              wlan.fc.type_subtype == 0x000c
+  0     13      Action                        wlan.fc.type_subtype == 0x000d
+  0     14      Action No Ack                 wlan.fc.type_subtype == 0x000e
+----------------------------------------------------------------------------
+  1      2      Trigger                       wlan.fc.type_subtype == 0x0012
+  1      3      TACK                          wlan.fc.type_subtype == 0x0013
+  1      4      Beamforming Report Poll       wlan.fc.type_subtype == 0x0014
+  1      5      VHT/HE NDP Announcement       wlan.fc.type_subtype == 0x0015
+  1      6      Control Frame Extension       wlan.fc.type_subtype == 0x0016
+  1      7      Control Wrapper               wlan.fc.type_subtype == 0x0017
+  1      8      Block Ack Request             wlan.fc.type_subtype == 0x0018
+  1      9      Block Ack                     wlan.fc.type_subtype == 0x0019
+  1     10      PS-Poll                       wlan.fc.type_subtype == 0x001a
+  1     11      RTS                           wlan.fc.type_subtype == 0x001b
+  1     12      CTS                           wlan.fc.type_subtype == 0x001c
+  1     13      Ack                           wlan.fc.type_subtype == 0x001d
+  1     14      CF-End                        wlan.fc.type_subtype == 0x001e
+  1     15      CF-End+CF-Ack                 wlan.fc.type_subtype == 0x001f
+----------------------------------------------------------------------------
+  2      0      Data                          wlan.fc.type_subtype == 0x0020
+  2      1      Data+CF-Ack                   wlan.fc.type_subtype == 0x0021
+  2      2      Data+CF-Poll                  wlan.fc.type_subtype == 0x0022
+  2      3      Data+CF-Ack+CF-Poll           wlan.fc.type_subtype == 0x0023
+  2      4      Null (no data)                wlan.fc.type_subtype == 0x0024
+  2      5      CF-Ack (no data)              wlan.fc.type_subtype == 0x0025
+  2      6      CF-Poll (no data)             wlan.fc.type_subtype == 0x0026
+  2      7      CF-Ack+CF-Poll (no data)      wlan.fc.type_subtype == 0x0027
+  2      8      QoS Data                      wlan.fc.type_subtype == 0x0028
+  2      9      QoS Data+CF-Ack               wlan.fc.type_subtype == 0x0029
+  2     10      QoS Data+CF-Poll              wlan.fc.type_subtype == 0x002a
+  2     11      QoS Data+CF-Ack+CF-Poll       wlan.fc.type_subtype == 0x002b
+  2     12      QoS Null (no data)            wlan.fc.type_subtype == 0x002c
+  2     14      QoS CF-Poll (no data)         wlan.fc.type_subtype == 0x002e
+  2     15      QoS CF-Ack+CF-Poll (no data)  wlan.fc.type_subtype == 0x002f
+----------------------------------------------------------------------------
+```
+
