@@ -1,11 +1,11 @@
-# PacketCapture
+# Packet Capture and Injection for 802.11
 Test various dot11 adapters in Linux for what they can and cannot receive
 
 ## Step 1
-Can we inject 802.11 frames?  There are various types and many different modulations - what can we inject thta might be picked up?  Somewhat of a chicken and egg scenario - we want to evaluate what adapters might pick up off the air in monitor mode, but we have to use these to determine what adapters will actually transmit.  General rule: if at least one adapter can pick up some specific frame type at a given modulation, then we are pretty sure that injection works for those conditions.  
+Can we inject 802.11 frames?  There are various types of frames and many different modulations - what can we inject thta might be picked up?  Somewhat of a chicken and egg scenario - we want to evaluate what adapters might pick up off the air in monitor mode, but we have to use these to determine what adapters will actually transmit.  General rule: if at least one adapter can pick up some specific frame type at a given modulation, then we are pretty sure that injection works for those conditions.  
 
 ### Adapters under review for injection:
-Bands: 2.4GHz / 5GHz / 6GHz adapters are represented; some only support specific bands, some WiFi4/5/6/6E, with varying channel width support (20/40/80/160MHz)
+Bands: 2.4GHz / 5GHz / 6GHz adapters are represented; some only support specific bands, some WiFi4/5/6/6E, with varying channel width support (20/40/80/160MHz).  Some are USB, some miniPCIe, and some M.2.  Still others, not shown, do not support monitor mode so can neither inject nor capture 802.11 traffic.
 
 ```
 System1: Debian11 with updated firmware via git and custom 6.0 kernel on x64 platform
@@ -37,6 +37,11 @@ Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center  
 
 ```
 Table of 802.11 Frame Types under test
+Types
+  Manangement: 0
+  Control:     1
+  Data:        2
+
 Type - Subtype  Name                          Wireshark Display Filter
 ----------------------------------------------------------------------------
   0      0      Association Request           wlan.fc.type_subtype == 0x0000
