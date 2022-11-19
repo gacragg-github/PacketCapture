@@ -23,7 +23,7 @@ Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center  
  10      wlan9  phy9    rt2800usb   monitor     Y 149 (5745MHz) 40MHz 5755 MHz        256  NetGear, Inc. WNDA4100 802.11abgn 3x3:3 [Ralink RT3573]
  11     wlan10 phy10     carl9170   monitor     Y 149 (5745MHz) 40MHz 5755 MHz       1059  Qualcomm Atheros Communications AR9170 802.11n
 ```
-Notes: The RTL chipsets use the [Aircrack-ng driver] (https://github.com/aircrack-ng/rtl8812au) 5.6.4.2 and don't show the channel information when set to 5GHz.
+Notes The RTL chipsets use the [Aircrack-ng driver](https://github.com/aircrack-ng/rtl8812au) 5.6.4.2 and don't show the channel information when set to 5GHz.
  
 
 ```
