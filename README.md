@@ -1,15 +1,14 @@
 # PacketCapture
-
 ##Test various dot11 adapters in Linux for what they can and cannot receive
 
 ###Step 1
 Can we inject 802.11 frames?  There are various types and many different modulations - what can we inject thta might be picked up?  Somewhat of a chicken and egg scenario - we want to evaluate what adapters might pick up off the air in monitor mode, but we have to use these to determine what adapters will actually transmit.  General rule: if at least one adapter can pick up some specific frame type at a given modulation, then we are pretty sure that injection works for those conditions.  
 
-Adapters under review for injection:
+####Adapters under review for injection:
 Bands: 2.4GHz / 5GHz / 6GHz adapters are represented; some only support specific bands, some WiFi4/5/6/6E, with varying channel width support (20/40/80/160MHz)
 
 ```
-System1: Debian11 with updated firmware via git and custom 6.0 kernel on x64 platform
+####System1: Debian11 with updated firmware via git and custom 6.0 kernel on x64 platform
 Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center    Packets Adapter
   0       mon0  phy0      iwlwifi   monitor     Y 149 (5745MHz) 80MHz 5775 MHz       2817  00.0 Network controller: Intel Corporation Device 2725 (rev 1a)
   1      wlan0  phy0      iwlwifi   managed     N                                       0  00.0 Network controller: Intel Corporation Device 2725 (rev 1a)
@@ -25,8 +24,14 @@ Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center  
  11     wlan10 phy10     carl9170   monitor     Y 149 (5745MHz) 40MHz 5755 MHz       1059  Qualcomm Atheros Communications AR9170 802.11n
 ```
 
-System2: Kali Rolling with updated firmware via git and 
-
+####System2: Kali Rolling with updated firmware via git and kernel 6.0.7-1kali1
+```
+Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center    Packets Adapter
+  0       mon0  phy0      iwlwifi   monitor     Y 149 (5745MHz) 80MHz 5775 MHz       8179  Intel Corporation Wireless 8265 / 8275 (rev 78)
+  1      wlan0  phy0      iwlwifi   managed     N                                       0  Intel Corporation Wireless 8265 / 8275 (rev 78)
+  2      wlan1  phy1   ath10k_pci   monitor     Y 149 (5745MHz) 80MHz 5775 MHz       8590  Qualcomm Atheros QCA986x/988x 802.11ac Wireless Network Adapter
+  3      wlan2  phy2        ath9k   monitor     Y 149 (5745MHz) 40MHz 5755 MHz       8270  Qualcomm Atheros AR928X Wireless Network Adapter (PCI-Express) (rev 01)
+```
 
 
 
