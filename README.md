@@ -106,7 +106,30 @@ Ndx           Iface   Phy       Driver      Mode   Up?       Channel Width    Pa
   5           wlan4  phy4      mt76x2u   monitor     Y 149 (5745MHz) 80MHz       7778  MediaTek Inc. MT7612U 802.11a/b/g/n/ac
 ```
 
-First pass through, inject only abg modulated frames; so for 5GHz, 802.11a, and for 2.4GHz, 802.11g.
+First pass through, inject only abg modulated frames; so for 5GHz, 802.11a, and for 2.4GHz, 802.11g.  Some of the files used for this work:
+````
+File                Description                                                                         Example
+interfaces.sh       Displays state information about wireless interfaces on Linux device                sudo ./interfaces.sh
+wifisetup.sh        Configure adapters for monitor mode                                                 sudo ./wifisetup -c '149 80MHz'
+CaptureTestVx.py    Use scapy to inject dot11 frames                                                    sudo ./CaptureTestV0.2.py -m abg -i wlan1
+sysdetials.sh       Collect some details about host systems                                             sudo ./sysdetails.sh > source.txt 2>&1
+```
+
+Setup is then to capture on System3 (all interfaces at the same time) and run an injection test through, for example, System1_mon0 interface.  Injected frames are 'tagged':
+```
+All frames use this MAC address:
+    wlan.addr == 01:23:45:67:89:ab
+SSID in use is the injection interface (for frames that have an SSID field; example: wlan1):
+    wlan.ssid == "wlan1"
+Frames have a data trailer which includes injection interface and Tx modulation attempted:
+    Tag: Vendor Specific: 3Com
+    Tag Number: Vendor Specific (221)
+    Tag length: 14
+    OUI: 00:01:02 (3Com)
+    Vendor Specific OUI Type: 3
+    Vendor Specific Data: 03206d6f6e31315f616267 [hex to UTF8 shows mon11_abg]
+```
+
 
 Datasets:
 ```
