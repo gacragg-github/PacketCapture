@@ -131,7 +131,7 @@ Frames have a data trailer which includes injection interface and Tx modulation 
     Vendor Specific OUI Type: 3
     Vendor Specific Data: 03206d6f6e31315f616267 [hex to UTF8 shows mon11_abg]
 ```
-
+To fight against in-the-air packet loss, run the injection routine mutliple times.  
 
 Datasets:
 ```
