@@ -94,8 +94,9 @@ Type - Subtype  Name                          Wireshark Display Filter
 
 How to know what devices can inject properly?  This is where we need reliable capture but we don't know if we have that.  THe approach then is just try to inject and capture with multiple adapters and see what is/is not shown.  If we see the expected frame from at least on capture adapter, then we have confidence that the adapter can inject that frame type.  Same with modulation, but not all adapters pass up correct modulation information in all cases so will have to look and compare.
 
-Capture adapters used to evaluate injection - x64 Debian11 platform with kernel 6.0.0-0.deb11.2-amd64 and current linux firmware updated via git:
+Capture adapters used to evaluate injection:
 ```
+System3: x64 Debian11 platform with kernel 6.0.0-0.deb11.2-amd64 and current linux firmware updated via git
 Ndx           Iface   Phy       Driver      Mode   Up?       Channel Width    Packets Adapter
   0            mon0  phy0      iwlwifi   monitor     Y 149 (5745MHz) 80MHz       8525  Intel Corporation Wi-Fi 6 AX210/AX211/AX411 160MHz (rev 1a)
   1           wlan0  phy0      iwlwifi   managed     N                              0  Intel Corporation Wi-Fi 6 AX210/AX211/AX411 160MHz (rev 1a)
