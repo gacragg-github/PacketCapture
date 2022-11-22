@@ -1,0 +1,97 @@
+********************************************************************************************************************************************
+DS2: 2.4GHz abg modulation only
+
+Notes
+Scapy configured to inject at 24Mbps
+See DS2_24GHz_abg.txt file for summary of what adapters can pick up what frames
+System3: somewhere along the way wlan4 crashed and no loner picks up any traffic. 
+
+---------------
+sys1_mon0
+	Some injected frames; crash; injected frames at 1Mbps
+
+---------------
+sys1_wlan1
+	Inject at 24Mbps
+
+---------------
+sys1_wlan2
+	Inject at 24Mbps
+
+---------------
+sys1_wlan3
+	Inject at 24Mbps
+
+---------------
+sys1_wlan4
+	Inject at 24Mbps
+
+---------------
+sys1_wlan5
+	Inject at 1Mbps
+
+---------------
+sys1_wlan6
+	No injection
+
+---------------
+sys1_wlan7
+	Inject at 24Mbps
+
+---------------
+sys1_wlan8
+	Inject at 24Mbps
+
+---------------
+sys1_wlan9
+	Inject at 24Mbps
+
+---------------
+sys1_wlan10
+	Inject at 24Mbps
+
+---------------
+sys2_mon0
+	Inject at 24Mbps
+
+---------------
+sys2_wlan1
+	N/A 5GHz only
+	
+---------------
+sys2_wlan2
+	Inject at 24Mbps
+
+
+
+
+system1 [injection]:
+Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center    Packets Adapter
+  0       mon0  phy0      iwlwifi   monitor     Y   6 (2437MHz) 20MHz 2437 MHz    7398061  00.0 Network controller: Intel Corporation Device 2725 (rev 1a)
+  1      wlan0  phy0      iwlwifi   managed     N                                       0  00.0 Network controller: Intel Corporation Device 2725 (rev 1a)
+  2      wlan1  phy1    rtl88XXau   monitor     Y   6 (2437MHz) 20MHz 2437 MHz    7933805  Senao EUB1200AC AC1200 DB [Realtek RTL8812AU]
+  3      wlan2  phy2     carl9170   monitor     Y   6 (2437MHz) 20MHz 2437 MHz    5967799  CACE Technologies Inc. AirPcap NX [Atheros AR9170+AR9104]
+  4      wlan3  phy3    rtl88XXau   monitor     Y   6 (2437MHz) 20MHz 2437 MHz    6187454  Realtek Semiconductor Corp. RTL8814AU 802.11a/b/g/n/ac
+  5      wlan4  phy4      mt76x2u   monitor     Y   6 (2437MHz) 20MHz 2437 MHz    7474521  MediaTek Inc. MT7612U 802.11a/b/g/n/ac
+  6      wlan5  phy5      mt7921u   monitor     Y   6 (2437MHz) 20MHz 2437 MHz    7775256  MediaTek Inc. Wireless_Device
+  7      wlan6  phy6    ath9k_htc   monitor     Y   6 (2437MHz) 20MHz 2437 MHz    7452053  Qualcomm Atheros Communications AR9271 802.11n
+  8      wlan7  phy7    rt2800usb   monitor     Y   6 (2437MHz) 20MHz 2437 MHz    7355852  Ralink Technology, Corp. RT5370
+  9      wlan8  phy8    rt2800usb   monitor     Y   6 (2437MHz) 20MHz 2437 MHz    6012609  Ralink Technology, Corp. RT5372
+ 10      wlan9  phy9    rt2800usb   monitor     Y   6 (2437MHz) 20MHz 2437 MHz    7577281  NetGear, Inc. WNDA4100 802.11abgn 3x3:3 [Ralink RT3573]
+ 11     wlan10 phy10     carl9170   monitor     Y   6 (2437MHz) 20MHz 2437 MHz     104480  Qualcomm Atheros Communications AR9170 802.11n
+
+system2 [injection]:
+Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center    Packets Adapter
+  0       mon0  phy0      iwlwifi   monitor     Y   6 (2437MHz) 20MHz 2437 MHz   13772416  Intel Corporation Wireless 8265 / 8275 (rev 78)
+  1      wlan0  phy0      iwlwifi   managed     N                                       0  Intel Corporation Wireless 8265 / 8275 (rev 78)
+  2      wlan1  phy1   ath10k_pci   monitor     Y 149 (5745MHz) 80MHz 5775 MHz   30913935  Qualcomm Atheros QCA986x/988x 802.11ac Wireless Network Adapter
+  3      wlan2  phy2        ath9k   monitor     Y   6 (2437MHz) 20MHz 2437 MHz   14702782  Qualcomm Atheros AR928X Wireless Network Adapter (PCI-Express) (rev 01)
+
+system3 [capture]:
+Ndx           Iface   Phy       Driver      Mode   Up?       Channel Width    Packets Adapter
+  0            mon0  phy0      iwlwifi   monitor     Y   6 (2437MHz) 20MHz     235297  Intel Corporation Wi-Fi 6 AX210/AX211/AX411 160MHz (rev 1a)
+  1           wlan0  phy0      iwlwifi   managed     N                              0  Intel Corporation Wi-Fi 6 AX210/AX211/AX411 160MHz (rev 1a)
+  2           wlan1  phy1      mt7921u   monitor     Y   6 (2437MHz) 20MHz     211200  MediaTek Inc. Wireless_Device
+  3           wlan2  phy2      mt76x2u   monitor     Y   6 (2437MHz) 20MHz     194494  MediaTek Inc. MT7612U 802.11a/b/g/n/ac
+  4           wlan3  phy3    rtl88XXau   monitor     Y   6 (2437MHz) 20MHz     185780  Senao EUB1200AC AC1200 DB [Realtek RTL8812AU]
+  5           wlan4  phy4    rtl88XXau   monitor     Y   6 (2437MHz) 20MHz     276354  Realtek Semiconductor Corp. RTL8814AU 802.11a/b/g/n/ac
