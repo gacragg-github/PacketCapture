@@ -23,7 +23,7 @@ Ndx      Iface   Phy       Driver      Mode   Up?       Channel Width   Center  
  10      wlan9  phy9    rt2800usb   monitor     Y 149 (5745MHz) 40MHz 5755 MHz    7312658  NetGear, Inc. WNDA4100 802.11abgn 3x3:3 [Ralink RT3573]
  11     wlan10 phy10     carl9170   monitor     Y 149 (5745MHz) 40MHz 5755 MHz         95  Qualcomm Atheros Communications AR9170 802.11n
 ```
-Notes The RTL chipsets use the [Aircrack-ng driver](https://github.com/aircrack-ng/rtl8812au) 5.6.4.2 and don't show the channel information when set to 5GHz.
+Notes: The RTL chipsets use the [Aircrack-ng driver](https://github.com/aircrack-ng/rtl8812au) 5.6.4.2 and don't show the channel information when set to 5GHz.
 
 ```
 System2: Kali Rolling with updated firmware via git and kernel 6.0.0-kali3-amd64 on x64 [injection]
@@ -38,12 +38,12 @@ Capture adapters used to evaluate injection:
 ```
 System3: Debian11 with updated firmware via git and kernel 6.0.0-0.deb11.2-amd64 on x64 [capture]
 Ndx           Iface   Phy       Driver      Mode   Up?       Channel Width    Packets Adapter
-  0            mon0  phy0      iwlwifi   monitor     Y 149 (5745MHz) 80MHz       8525  Intel Corporation Wi-Fi 6 AX210/AX211/AX411 160MHz (rev 1a)
+  0            mon0  phy0      iwlwifi   monitor     Y 149 (5745MHz) 80MHz       1794  Intel Corporation Wi-Fi 6 AX210/AX211/AX411 160MHz (rev 1a)
   1           wlan0  phy0      iwlwifi   managed     N                              0  Intel Corporation Wi-Fi 6 AX210/AX211/AX411 160MHz (rev 1a)
-  2           wlan1  phy1    rtl88XXau   monitor     Y                           8093  Senao EUB1200AC AC1200 DB [Realtek RTL8812AU]
-  3           wlan2  phy2    rtl88XXau   monitor     Y                          19246  Realtek Semiconductor Corp. RTL8814AU 802.11a/b/g/n/ac
-  4           wlan3  phy3      mt7921u   monitor     Y 149 (5745MHz) 80MHz       8142  MediaTek Inc. Wireless_Device
-  5           wlan4  phy4      mt76x2u   monitor     Y 149 (5745MHz) 80MHz       7778  MediaTek Inc. MT7612U 802.11a/b/g/n/ac
+  2           wlan1  phy1      mt7921u   monitor     Y 149 (5745MHz) 80MHz       1483  MediaTek Inc. Wireless_Device
+  3           wlan2  phy2      mt76x2u   monitor     Y 149 (5745MHz) 80MHz       1555  MediaTek Inc. MT7612U 802.11a/b/g/n/ac
+  4           wlan3  phy3    rtl88XXau   monitor     Y                           1119  Senao EUB1200AC AC1200 DB [Realtek RTL8812AU]
+  5           wlan4  phy4    rtl88XXau   monitor     Y                            793  Realtek Semiconductor Corp. RTL8814AU 802.11a/b/g/n/ac
 ```
 
 
