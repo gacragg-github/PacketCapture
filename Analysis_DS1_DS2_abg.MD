@@ -6,7 +6,6 @@ Injection routine is executed 5x times on both 2.4 and 5GHz bands, for a total o
 
 This is a stacked bar chart of the sum of each frame type, captured by the interfaces on System3.  Some anomalies are called out here:
 
-```
 0. sys3_wlan4 crashed midway through this testing and the device seemed to miss a lot of traffic anyway.  In general, will ignore this capture adapter due to the issues observed.
 1. Frame type 0x00 (Association Request) shows more than the total injected frames possible.  This is an artifact from testing: type 0x17 (Control Wrapper) contains an Association Request frame so with Wireshark filtering, both of these type/subtype show so are counted multiple times.  They could be excluded, but the point is to see what traffic is injected and captured, so the answer is apparent so no need to further process.
 2. Frame type 0x20 (Data) has more frames collected than injected.  In this case, it is due to certain adapters transmitting extranous frames of this type.  Namely, sys1_mon0 send extra Data and CTS (0x12) frames.
@@ -14,7 +13,6 @@ This is a stacked bar chart of the sum of each frame type, captured by the inter
 4. sys3_mon0 interface never picked up 0x13 frames (TACK) though other adapters did.  Is there something with this driver that prevents this frame type from being captured?
 5. Same as (4) but for 0x17 frames (Control Wrapper).
 6. sys3_wlan2 is not able to pickup 0x1b (RTS) frames.
-```
 
 As for injection, we are looking for a reliable adapter that provides for an injection capability of all (or as many as possible) frame types at the configured modulation.  In this study, we are then looking for frames that were transmitted at 24Mbps on both 2.4 and 5GHz.  This leaves us with the following adapters, ignoring frame type 0x16 as no interface seems to be able to inject this specific type:
 
