@@ -3,6 +3,7 @@ DS1: 5GHz abg modulation only
 Notes
 Scapy configured to inject at 24Mbps
 See DS1_5GHz_abg.txt file for summary of what adapters can pick up what frames
+pcap file is an example of one of the tests
 
 ---------------
 sys1_mon0
