@@ -142,4 +142,11 @@ Datasets:
 DS1: inject all types on each injection interface, one interface at a time, and see if any adapters are able to inject all frame types at a modulations for 5GHz.
 DS2: inject all types on each injection interface, one interface at a time, and see if any adapters are able to inject all frame types at g modulations for 2.4GHz.
 ```
+See Analysis_DS1_DS2_abg.md for analysis of DS1/DS2 datasets.  Conclude: we have four adapters that have reasonable injection capability:
 
+sys1_wlan1
+sys1_wlan3 
+sys1_wlan4
+sys1_wlan9
+
+## Step 2: How do these adapters handle various modulations?
