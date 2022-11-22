@@ -112,7 +112,7 @@ File                Description                                                 
 interfaces.sh       Displays state information about wireless interfaces on Linux device                sudo ./interfaces.sh
 wifisetup.sh        Configure adapters for monitor mode                                                 sudo ./wifisetup -c '149 80MHz'
 CaptureTestVx.py    Use scapy to inject dot11 frames                                                    sudo ./CaptureTestV0.2.py -m abg -i wlan1
-sysdetials.sh       Collect some details about host systems                                             sudo ./sysdetails.sh > source.txt 2>&1
+sysdetails.sh       Collect some details about host systems                                             sudo ./sysdetails.sh > source.txt 2>&1
 pcapfilter.sh       Rollup per interface / per type-subtype frames counts                               ./pcapfilter.sh <pcap file>
 ```
 
@@ -144,10 +144,11 @@ DS2: inject all types on each injection interface, one interface at a time, and 
 ```
 See Analysis_DS1_DS2_abg.md for analysis of DS1/DS2 datasets.  Conclude: we have four adapters that have reasonable injection capability:
 ```
-sys1_wlan1
-sys1_wlan3 
-sys1_wlan4
-sys1_wlan9
+Interface   Adapter     
+sys1_wlan1  Senao EUB1200AC AC1200 DB [Realtek RTL8812AU]
+sys1_wlan3  Realtek Semiconductor Corp. RTL8814AU 802.11a/b/g/n/ac 
+sys1_wlan4  MediaTek Inc. MT7612U 802.11a/b/g/n/ac
+sys1_wlan9  NetGear, Inc. WNDA4100 802.11abgn 3x3:3 [Ralink RT3573]
 ```
 
 ## Step 2: How do these adapters handle various modulations?
