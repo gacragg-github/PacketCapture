@@ -24,12 +24,14 @@ sys1_wlan2      No              No frames injected on 5GHz (regulatory issue?)
 sys1_wlan3      Yes             Uses 24Mbps
 sys1_wlan4      Yes             Uses 24Mbps
 sys1_wlan5      No              All frames types but only 6Mbps (5GHz) or 1Mbps (2.4GHz)
-sys1_wlan6      No              No frames injected on 5GHz
-sys1_wlan7      No              No frames injected on 5GHz
-sys1_wlan8      No              No frames injected on 5GHz
+sys1_wlan6      No              No frames injected on either band
+sys1_wlan7      No              No frames injected on 5GHz (2.4GHz only)
+sys1_wlan8      No              No frames injected on 5GHz (2.4GHz only)
 sys1_wlan9      Yes             Uses 24Mbps
 sys1_wlan10     No              No frames injected on 5GHz (regulatory issue?)
 sys2_mon0       No              Cannot inject frame type 0x18
 sys2_wlan1      No              No frames injected on 5GHz
 sys2_wlan2      No              No frames injected on 5GHz; partial on 2.4GHz
 ```
+
+Notes: Some of these might be OK for use if only need 2.4GHz.  Somewhat arbitrarily, I am looking for something that is the most flexible.  Results might change, too, when different modulations are used (e.g. HT, VHT, HE, etc).  To do: evaluate 6GHz with WiFi6E.
