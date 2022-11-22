@@ -1,6 +1,6 @@
 # Analysis of datasets DS1 and DS2
 
-Injection routine is executed 5x times on both 2.4 and 5GHz bands, for a total of 10 runs per injection interface.  So for a given capture interface, it should see from 0 to 10 of each frame type.  We might see zero if the frame is not actually injected, or if the capture adapter cannot pick up this type of frame at the given modulation.  We might see less than 10 but more than zero if there is some packet loss in the RF environment.  Adding up all the visible frames by capture interfae and type:
+Injection routine is executed 5x times on both 2.4 and 5GHz bands, for a total of 10 runs per injection interface.  So for a given capture interface, it should see from 0 to 10 of each frame type.  We might see zero if the frame is not actually injected, or if the capture adapter cannot pick up this type of frame at the given modulation.  We might see less than 10 but more than zero if there is some packet loss in the RF environment.  Adding up all the visible frames by capture interface and type (note these are all from System3, the capture system):
 
 ![DS1_2](https://user-images.githubusercontent.com/70328008/203403931-34a4e74c-06a1-4b2b-a796-9421398ebc13.png)
 
