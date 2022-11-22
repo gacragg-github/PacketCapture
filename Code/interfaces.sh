@@ -11,7 +11,12 @@
 #2        wlan11  phy3    rt2800usb       monitor         Y       11 (2462MHz)    20MHz   274373
 #3        wlan6   phy1    rt2800usb       monitor         Y       6 (2437MHz)     20MHz   4629
 #
-#Maintainer: G. Cragg, george.cragg@draeger.com
+#Maintainer: G. Cragg, gacragg@gmail.com
+#
+#	THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+
+
 #Version	Date		Notes
 #0			Oct 2017	Release - note bug that if HT not enabled, output will be partially garbled
 #						So set interface to do HT, such as  
