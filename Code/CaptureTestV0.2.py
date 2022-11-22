@@ -22,6 +22,8 @@
 #		3. https://github.com/secdev/scapy/blob/master/scapy/layers/dot11.py
 #		4. scapy>>> ls(RadioTap)
 #		5. https://docs.kernel.org/networking/mac80211-injection.html
+#
+#	THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 
 import binascii
