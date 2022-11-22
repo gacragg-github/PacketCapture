@@ -1,0 +1,63 @@
+DS1: 5GHz abg modulation only
+
+Notes
+Scapy configured to inject at 24Mbps
+See DS1_5GHz_abg.txt file for summary of what adapters can pick up what frames
+
+---------------
+sys1_mon0
+	Some injected frames; crash; injected frames at 6Mbps
+ 
+---------------	
+sys1_wlan1
+	Inject at 24Mbps
+
+---------------	
+sys1_wlan2
+	No injection at all
+
+---------------	
+sys1_wlan3
+	Inject at 24Mbps
+	
+---------------	
+sys1_wlan4
+	Inject at 24Mbps
+	
+---------------	
+sys1_wlan5
+	Inject at 6Mbps
+
+---------------	
+sys1_wlan6
+	N/A 2.4GHz only
+
+---------------	
+sys1_wlan7
+	N/A 2.4 only
+	
+---------------	
+sys1_wlan8
+	N/A 2.4 only
+	
+---------------	
+sys1_wlan9
+	Inject at 24Mbps
+
+---------------	
+sys1_wlan10
+	No injection
+
+---------------	
+sys2_mon0
+	Inject at 24Mbps
+
+---------------	
+sys2_wlan1
+	No injection; errors in dmesg
+		[Tue Nov 22 08:39:32 2022] ath10k_warn: 33 callbacks suppressed
+	[	Tue Nov 22 08:39:32 2022] ath10k_pci 0000:04:00.0: failed to transmit frame: -524
+
+---------------	
+sys2_wlan2
+	No injection
