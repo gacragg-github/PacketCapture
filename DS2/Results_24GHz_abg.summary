@@ -4,7 +4,8 @@ DS2: 2.4GHz abg modulation only
 Notes
 Scapy configured to inject at 24Mbps
 See DS2_24GHz_abg.txt file for summary of what adapters can pick up what frames
-System3: somewhere along the way wlan4 crashed and no loner picks up any traffic. 
+System3: somewhere along the way wlan4 crashed and no loner picks up any traffic.
+pcap file is an example of one of the tests
 
 ---------------
 sys1_mon0
