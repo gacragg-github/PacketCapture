@@ -170,7 +170,7 @@ do
 	rxpkts_0[$i]+=${packets}
 	if [ ! "${calcdeltapkts}" = true ]
 	then
-		strOUTPUT[$i]=$(printf "%s %9s" "${strOUTPUT[$i]}" "$packets")
+		strOUTPUT[$i]=$(printf "%s %10s" "${strOUTPUT[$i]}" "$packets")
 	fi 
 done
 
@@ -191,7 +191,7 @@ then
 		packets=$(/sbin/ifconfig ${IFACES[$i]} | awk '/RX packets/ {print $3}')
 		packetsdelta=$(($packets-${rxpkts_0[$i]}))
 		if [ "${debug}" = true ]; then echo "[DEBUG] packets: ${packets}, pkts_0: ${rxpkts_0[$i]}, deltaP: ${packetsdelta}"; fi
-		strOUTPUT[$i]=$(printf "%s %9s %6s" "${strOUTPUT[$i]}" "$packets" "$packetsdelta")
+		strOUTPUT[$i]=$(printf "%s %10s %6s" "${strOUTPUT[$i]}" "$packets" "$packetsdelta")
 	done
 fi
 
@@ -218,10 +218,10 @@ echo
 if [ "${calcdeltapkts}" = true ]
 then
 	header=(Ndx Iface Phy Driver Mode Up Channel Width Center Packets DeltaP Adapter)
-	printf "%3s %9s %5s %12s %10s %3s %13s %6s %8s %9s %6s %s\n" "${header[@]}"
+	printf "%3s %9s %5s %12s %10s %3s %13s %6s %8s %10s %6s  %s\n" "${header[@]}"
 else
 	header=(Ndx Iface Phy Driver Mode Up Channel Width Center Packets Adapter)
-	printf "%3s %9s %5s %12s %10s %3s %13s %6s %8s %9s %s\n" "${header[@]}"
+	printf "%3s %9s %5s %12s %10s %3s %13s %6s %8s %10s  %s\n" "${header[@]}"
 fi
 for i in "${strOUTPUT[@]}"
 do
@@ -231,79 +231,6 @@ done
 
 #Block comments
 : <<'END'
-george@nms1:~/Documents$ ./interfaces.sh
-
-Ndx      Iface   Phy       Driver      Mode   Up?         Channel Width      Packets
-  0      wlan0  phy0    rt2800usb   monitor     Y     1 (2412MHz) 20MHz      3764007
-  1      wlan1  phy1    ath9k_htc   monitor     Y     1 (2412MHz) 20MHz      3875317
-  2      wlan6  phy3    ath9k_htc   monitor     Y     6 (2437MHz) 20MHz      7293112
-  3     wlan11  phy2    ath9k_htc   monitor     Y    11 (2462MHz) 20MHz      8426692
-  4     wlan36  phy5       8812au   monitor     Y    36 (5180MHz) 80MHz      8913971
-  5    wlan149  phy4       8812au   monitor     Y   149 (5745MHz) 80MHz     14585200
-
-  
-  
-root@airbud1:/home/admin/tools# ./interfaces.sh
-
-Ndx      Iface   Phy       Driver      Mode   Up?         Channel Width     Center      Packets  Adapter
-  0      wlan0  phy5    rt2800usb   monitor     Y     1 (2412MHz) 20MHz   2412 MHz       305982  Ralink Technology, Corp. RT3573
-  1      wlan2  phy0    rtl8192cu   monitor     Y     1 (2412MHz) 20MHz   2412 MHz          602  NetGear, Inc. WNA1000M 802.11bgn [Realtek RTL8188CUS]
-  2      wlan3  phy8       8812au   monitor     Y     1 (2412MHz) 20MHz   2412 MHz        73933  Senao EUB1200AC AC1200 DB [Realtek RTL8812AU]
-  3      wlan5  phy3     carl9170   monitor     Y     1 (2412MHz) 20MHz   2412 MHz       184319  NetGear, Inc. WNDA3100v1 802.11abgn [Atheros AR9170+AR9104]
-  4      wlan6  phy4    ath9k_htc   monitor     Y     1 (2412MHz) 20MHz   2412 MHz       234125  Atheros Communications, Inc. AR9271 802.11n
-  5      wlan8  phy9    rt2800usb   monitor     Y     1 (2412MHz) 20MHz   2412 MHz        17466  Ralink Technology, Corp. RT5370
-  6     wlan10  phy6      iwlwifi   monitor     Y     1 (2412MHz) 20MHz   2412 MHz       238181  Intel Corporation Device 24fd (rev 78)
-  7     wlan90  phy1        ath9k   monitor     Y     1 (2412MHz) 20MHz   2412 MHz       379625  Qualcomm Atheros AR928X Wireless Network Adapter (PCI-Express) (rev 01)
-  8     wlan91  phy7        ath9k   monitor     Y     1 (2412MHz) 20MHz   2412 MHz       297366  Qualcomm Atheros AR928X Wireless Network Adapter (PCI-Express) (rev 01)
-  9     wlan92 phy10        ath9k   monitor     Y     1 (2412MHz) 20MHz   2412 MHz       495096  Qualcomm Atheros AR928X Wireless Network Adapter (PCI-Express) (rev 01)
- 10    wlan104  phy2   ath10k_pci   monitor     Y   149 (5745MHz) 80MHz   5775 MHz       188310  Qualcomm Atheros QCA986x/988x 802.11ac Wireless Network Adapter
-
-  
-admin@kaliVM:~/Documents$ ./interfaces.sh
-
-Ndx      Iface   Phy       Driver      Mode   Up?         Channel Width      Packets
-  0      wlan0  phy0      iwlwifi   monitor     Y   149 (5745MHz) 80MHz       907986
-  1      wlan1  phy2    rt2800usb   monitor     Y     1 (2412MHz) 20MHz       231104
-  2      wlan6  phy1    rt2800usb   monitor     Y     6 (2437MHz) 20MHz         7996
-  3     wlan11  phy3    rt2800usb   monitor     Y    11 (2462MHz) 20MHz       438530
-
-[george@server Documents]$ ./interfaces.sh
-
-Ndx      Iface   Phy       Driver      Mode   Up?         Channel Width      Packets
-  0     wlp1s0  phy0    rt2800pci   managed     Y                                  0
-
- 
-admin1@dinm9:~/software/injection$ sudo ./interfaces.sh -d 3
-[CONFIG] deltaperiod set to argument 3
-Calculating delta packets...3...2...1...
-[DEBUG] packets: 12185972, pkts_0: 12185881, deltaP: 91
-[DEBUG] packets: 0, pkts_0: 0, deltaP: 0
-[DEBUG] packets: 12694106, pkts_0: 12693937, deltaP: 169
-[DEBUG] packets: 9878849, pkts_0: 9878730, deltaP: 119
-[DEBUG] packets: 10056459, pkts_0: 10056316, deltaP: 143
-[DEBUG] packets: 12174753, pkts_0: 12174593, deltaP: 160
-[DEBUG] packets: 12619865, pkts_0: 12619701, deltaP: 164
-[DEBUG] packets: 12266408, pkts_0: 12266243, deltaP: 165
-[DEBUG] packets: 12106160, pkts_0: 12105997, deltaP: 163
-[DEBUG] packets: 10030207, pkts_0: 10030095, deltaP: 112
-[DEBUG] packets: 12320844, pkts_0: 12320684, deltaP: 160
-[DEBUG] packets: 3993749, pkts_0: 3993628, deltaP: 121
-
-Ndx     Iface   Phy       Driver       Mode  Up       Channel  Width   Center   Packets DeltaP Adapter
-  0       mon0  phy0      iwlwifi   monitor   Y 100 (5500MHz) 160MHz 5570 MHz  12185972     91  00.0 Network controller: Intel Corporation Device 2725 (rev 1a)
-  1      wlan0  phy0      iwlwifi   managed   N                                       0      0  00.0 Network controller: Intel Corporation Device 2725 (rev 1a)
-  2      wlan1  phy1    rtl88XXau   monitor   Y   6 (2437MHz)  20MHz 2437 MHz  12694106    169  Senao EUB1200AC AC1200 DB [Realtek RTL8812AU]
-  3      wlan2  phy2     carl9170   monitor   Y   6 (2437MHz)  20MHz 2437 MHz   9878849    119  CACE Technologies Inc. AirPcap NX [Atheros AR9170+AR9104]
-  4      wlan3  phy3    rtl88XXau   monitor   Y   6 (2437MHz)  20MHz 2437 MHz  10056459    143  Realtek Semiconductor Corp. RTL8814AU 802.11a/b/g/n/ac
-  5      wlan4  phy4      mt76x2u   monitor   Y   6 (2437MHz)  20MHz 2437 MHz  12174753    160  MediaTek Inc. MT7612U 802.11a/b/g/n/ac
-  6      wlan5  phy5      mt7921u   monitor   Y   6 (2437MHz)  20MHz 2437 MHz  12619865    164  MediaTek Inc. Wireless_Device
-  7      wlan6  phy6    ath9k_htc   monitor   Y   6 (2437MHz)  20MHz 2437 MHz  12266408    165  Qualcomm Atheros Communications AR9271 802.11n
-  8      wlan7  phy7    rt2800usb   monitor   Y   6 (2437MHz)  20MHz 2437 MHz  12106160    163  Ralink Technology, Corp. RT5370
-  9      wlan8  phy8    rt2800usb   monitor   Y   6 (2437MHz)  20MHz 2437 MHz  10030207    112  Ralink Technology, Corp. RT5372
- 10      wlan9  phy9    rt2800usb   monitor   Y   6 (2437MHz)  20MHz 2437 MHz  12320844    160  NetGear, Inc. WNDA4100 802.11abgn 3x3:3 [Ralink RT3573]
- 11     wlan10 phy10     carl9170   monitor   Y   6 (2437MHz)  20MHz 2437 MHz   3993749    121  Qualcomm Atheros Communications AR9170 802.11n
- 
-  
 END
 
 
