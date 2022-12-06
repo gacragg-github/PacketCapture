@@ -170,7 +170,7 @@ do
 	rxpkts_0[$i]+=${packets}
 	if [ ! "${calcdeltapkts}" = true ]
 	then
-		strOUTPUT[$i]=$(printf "%s %10s" "${strOUTPUT[$i]}" "$packets")
+		strOUTPUT[$i]=$(printf "%s %11s" "${strOUTPUT[$i]}" "$packets")
 	fi 
 done
 
@@ -191,7 +191,7 @@ then
 		packets=$(/sbin/ifconfig ${IFACES[$i]} | awk '/RX packets/ {print $3}')
 		packetsdelta=$(($packets-${rxpkts_0[$i]}))
 		if [ "${debug}" = true ]; then echo "[DEBUG] packets: ${packets}, pkts_0: ${rxpkts_0[$i]}, deltaP: ${packetsdelta}"; fi
-		strOUTPUT[$i]=$(printf "%s %10s %6s" "${strOUTPUT[$i]}" "$packets" "$packetsdelta")
+		strOUTPUT[$i]=$(printf "%s %11s %6s" "${strOUTPUT[$i]}" "$packets" "$packetsdelta")
 	done
 fi
 
@@ -218,10 +218,10 @@ echo
 if [ "${calcdeltapkts}" = true ]
 then
 	header=(Ndx Iface Phy Driver Mode Up Channel Width Center Packets DeltaP Adapter)
-	printf "%3s %9s %5s %12s %10s %3s %13s %6s %8s %10s %6s  %s\n" "${header[@]}"
+	printf "%3s %9s %5s %12s %10s %3s %13s %6s %8s %11s %6s  %s\n" "${header[@]}"
 else
 	header=(Ndx Iface Phy Driver Mode Up Channel Width Center Packets Adapter)
-	printf "%3s %9s %5s %12s %10s %3s %13s %6s %8s %10s  %s\n" "${header[@]}"
+	printf "%3s %9s %5s %12s %10s %3s %13s %6s %8s %11s  %s\n" "${header[@]}"
 fi
 for i in "${strOUTPUT[@]}"
 do
