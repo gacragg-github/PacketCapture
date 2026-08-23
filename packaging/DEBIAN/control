@@ -1,0 +1,12 @@
+Package: packetcapture-wifi-tools
+Version: 1.0
+Section: net
+Priority: optional
+Architecture: all
+Depends: bash, iw, ethtool, iproute2, network-manager, pciutils, usbutils
+Maintainer: G. Cragg <gacragg@gmail.com>
+Description: Wireless adapter reporting and monitor-mode setup tools
+ interfaces.sh reports wireless interface state (driver, mode, channel,
+ packet counts, adapter model) in table form.
+ wifisetup.sh idempotently configures wireless adapters into monitor mode
+ and sets channel/frequency, skipping adapters already configured.
