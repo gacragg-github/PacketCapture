@@ -13,6 +13,10 @@
 #				on short values or clip long ones.
 # 0.5		Aug 2026	Add -a to cap the Adapter column width for narrow
 #				terminals (it's the one column with no natural bound).
+# 0.6		Aug 2026	Fix USB adapter lookup: matched by vid:pid (lsusb -d), which
+#				returns one line per identical adapter plugged in, corrupting
+#				the Adapter field for every row when two share a model. Now
+#				matched by the specific bus:devnum (lsusb -s) instead.
 
 deltaperioddefault=3
 debug=false
@@ -48,7 +52,7 @@ done
 
 # Adapter human name via lspci/lsusb (replaces airmon-ng screen-scrape)
 get_adapter() {
-	local IF="$1" dev bus a d vid pid
+	local IF="$1" dev bus a d busnum devnum
 	dev="/sys/class/net/$IF/device"
 	bus=$(basename "$(readlink -f "$dev/subsystem" 2>/dev/null)" 2>/dev/null)
 	if [ "$bus" = pci ]; then
@@ -57,8 +61,11 @@ get_adapter() {
 	elif [ "$bus" = usb ]; then
 		d=$(readlink -f "$dev" 2>/dev/null)
 		while [ -n "$d" ] && [ ! -e "$d/idVendor" ] && [ "$d" != / ]; do d=$(dirname "$d"); done
-		vid=$(cat "$d/idVendor" 2>/dev/null); pid=$(cat "$d/idProduct" 2>/dev/null)
-		[ -n "$vid" ] && lsusb -d "$vid:$pid" 2>/dev/null | sed -E 's/^Bus.*ID [0-9a-f:]+ //'
+		#Match this specific device by bus:devnum, not -d vid:pid - two adapters of the
+		#same model share a vid:pid, and -d would return one line per match, corrupting
+		#every row's Adapter field with every matching device's name glued together.
+		busnum=$(cat "$d/busnum" 2>/dev/null); devnum=$(cat "$d/devnum" 2>/dev/null)
+		[ -n "$busnum" ] && [ -n "$devnum" ] && lsusb -s "${busnum}:${devnum}" 2>/dev/null | sed -E 's/^Bus.*ID [0-9a-f:]+ //'
 	fi
 }
 
