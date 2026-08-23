@@ -8,20 +8,26 @@
 # 0.3		Aug 2026	Remove aircrack-ng/ethtool/net-tools deps: driver via /sys,
 #				up via /sys flags, rx via /sys statistics, adapter via
 #				lspci/lsusb (was airmon-ng). Keeps iw + pciutils/usbutils.
+# 0.4		Aug 2026	Dynamic column widths sized to actual data instead of
+#				fixed printf widths, so the table doesn't waste space
+#				on short values or clip long ones.
+# 0.5		Aug 2026	Add -a to cap the Adapter column width for narrow
+#				terminals (it's the one column with no natural bound).
 
 deltaperioddefault=3
 debug=false
 
 usage () {
 	echo "Describe wireless interfaces"
-	echo "Usage: $0 [-d xxx]"
+	echo "Usage: $0 [-d xxx] [-a xxx]"
 	echo -e "  -h                   Help"
 	echo -e "  -d <xxx>             Display delta packet count over xxx period of sec"
+	echo -e "  -a <xxx>             Limit the Adapter column to xxx characters (overrides its dynamic width)"
 }
 
 if [[ $(id -u) -ne 0 ]]; then echo "Note: More information is available with elevated privileges"; echo; fi
 
-while getopts "h?d:" opt; do
+while getopts "h?d:a:" opt; do
 	case "$opt" in
 		h|\?) usage; exit 0 ;;
 		d)
@@ -31,6 +37,11 @@ while getopts "h?d:" opt; do
 				deltaperiod=${deltaperioddefault}
 			fi
 			calcdeltapkts=true
+		;;
+		a)
+			if [ $OPTARG -eq $OPTARG 2>/dev/null ] && [ $OPTARG -gt 0 ]; then
+				adapterwidth=$OPTARG
+			fi
 		;;
 	esac
 done
@@ -51,52 +62,60 @@ get_adapter() {
 	fi
 }
 
+# Width of the widest of a column header and its values
+colwidth() {
+	local w=${#1} v
+	shift
+	for v in "$@"; do
+		(( ${#v} > w )) && w=${#v}
+	done
+	echo "$w"
+}
+
 # Interfaces (iw)
 IFACES=($(/sbin/iw dev | awk '/Interface/ {print $2}' | sort -V))
-strOUTPUT=IFACES
 WIPHY=()
-
-for i in "${!IFACES[@]}"; do
-	strOUTPUT[$i]=$(printf "%3s %10s\n" "$i" "${IFACES[$i]}")
-done
+DRIVER=()
+MODE=()
+UP=()
+CHANNEL=()
+WIDTH=()
+CENTER=()
+PACKETS=()
+DELTAP=()
+ADAPTER=()
 
 # Phy (iw)
 for i in "${!IFACES[@]}"; do
 	phyID=$(/sbin/iw dev ${IFACES[$i]} info | awk '/wiphy/ {print $2}')
 	WIPHY[$i]=phy$phyID
-	strOUTPUT[$i]=$(printf "%s %5s" "${strOUTPUT[$i]}" "${WIPHY[$i]}")
 done
 
 # Driver (/sys, was ethtool -i)
 for i in "${!IFACES[@]}"; do
-	driver=$(basename "$(readlink -f /sys/class/net/${IFACES[$i]}/device/driver 2>/dev/null)" 2>/dev/null)
-	strOUTPUT[$i]=$(printf "%s %12s" "${strOUTPUT[$i]}" "$driver")
+	DRIVER[$i]=$(basename "$(readlink -f /sys/class/net/${IFACES[$i]}/device/driver 2>/dev/null)" 2>/dev/null)
 done
 
 # Mode (iw)
 for i in "${!IFACES[@]}"; do
-	mode=$(/sbin/iw dev ${IFACES[$i]} info | awk '/type/ {print $2}')
-	strOUTPUT[$i]=$(printf "%s %9s" "${strOUTPUT[$i]}" "$mode")
+	MODE[$i]=$(/sbin/iw dev ${IFACES[$i]} info | awk '/type/ {print $2}')
 done
 
 # Up? (/sys flags bit0 IFF_UP, was ifconfig|grep UP)
 for i in "${!IFACES[@]}"; do
 	f=$(cat /sys/class/net/${IFACES[$i]}/flags 2>/dev/null)
-	if [ $(( ${f:-0} & 1 )) -eq 1 ]; then Status="Y"; else Status="N"; fi
-	strOUTPUT[$i]=$(printf "%s %3s" "${strOUTPUT[$i]}" "$Status")
+	if [ $(( ${f:-0} & 1 )) -eq 1 ]; then UP[$i]="Y"; else UP[$i]="N"; fi
 done
 
 # Channel(Freq) + bandwidth (iw)
 for i in "${!IFACES[@]}"; do
-	channel=$(/sbin/iw ${IFACES[$i]} info | awk '/channel/ {print $0}' | awk -F" " '{print$2" "$3$4}' | sed 's/,$//')
-	bandwidth=$(/sbin/iw ${IFACES[$i]} info | awk '/channel/ {print $0}' | awk -F" " '{print $6$7}' | sed 's/,$//')
-	strOUTPUT[$i]=$(printf "%s %13s %6s" "${strOUTPUT[$i]}" "$channel" "$bandwidth")
+	CHANNEL[$i]=$(/sbin/iw ${IFACES[$i]} info | awk '/channel/ {print $0}' | awk -F" " '{print $2"/"$3$4}' | sed 's/[(),]//g')
+	WIDTH[$i]=$(/sbin/iw ${IFACES[$i]} info | awk '/channel/ {print $0}' | awk -F" " '{print $6$7}' | sed 's/,$//')
 done
 
 # Center freq (iw)
 for i in "${!IFACES[@]}"; do
-	center=$(/sbin/iw dev ${IFACES[$i]} info | awk '/center1/ { print $9" "$10}')
-	strOUTPUT[$i]=$(printf "%s %8s" "${strOUTPUT[$i]}" "$center")
+	CENTER[$i]=$(/sbin/iw dev ${IFACES[$i]} info | awk '/center1/ { print $9$10}')
 done
 
 # Packets (/sys, was ifconfig RX packets)
@@ -105,7 +124,7 @@ for i in "${!IFACES[@]}"; do
 	packets=$(cat /sys/class/net/${IFACES[$i]}/statistics/rx_packets 2>/dev/null)
 	rxpkts_0[$i]+=${packets}
 	if [ ! "${calcdeltapkts}" = true ]; then
-		strOUTPUT[$i]=$(printf "%s %11s" "${strOUTPUT[$i]}" "$packets")
+		PACKETS[$i]=${packets}
 	fi
 done
 
@@ -115,23 +134,51 @@ if [ "${calcdeltapkts}" = true ]; then
 	echo
 	for i in "${!IFACES[@]}"; do
 		packets=$(cat /sys/class/net/${IFACES[$i]}/statistics/rx_packets 2>/dev/null)
-		packetsdelta=$(($packets-${rxpkts_0[$i]}))
-		strOUTPUT[$i]=$(printf "%s %11s %6s" "${strOUTPUT[$i]}" "$packets" "$packetsdelta")
+		PACKETS[$i]=${packets}
+		DELTAP[$i]=$(($packets-${rxpkts_0[$i]}))
 	done
 fi
 
 # Adapter name (lspci/lsusb, was airmon-ng)
 for i in "${!IFACES[@]}"; do
-	adapter=$(get_adapter "${IFACES[$i]}")
-	strOUTPUT[$i]=$(printf "%s  %s" "${strOUTPUT[$i]}" "$adapter")
+	ADAPTER[$i]=$(get_adapter "${IFACES[$i]}")
+	if [ -n "${adapterwidth}" ]; then
+		ADAPTER[$i]="${ADAPTER[$i]:0:$adapterwidth}"
+	fi
 done
+
+# Column widths sized to the widest header/value actually present this run
+NDX=("${!IFACES[@]}")
+W_NDX=$(colwidth Ndx "${NDX[@]}")
+W_IFACE=$(colwidth Iface "${IFACES[@]}")
+W_PHY=$(colwidth Phy "${WIPHY[@]}")
+W_DRIVER=$(colwidth Driver "${DRIVER[@]}")
+W_MODE=$(colwidth Mode "${MODE[@]}")
+W_UP=$(colwidth Up "${UP[@]}")
+W_CHANNEL=$(colwidth Channel "${CHANNEL[@]}")
+W_WIDTH=$(colwidth Width "${WIDTH[@]}")
+W_CENTER=$(colwidth Center "${CENTER[@]}")
+W_PACKETS=$(colwidth Packets "${PACKETS[@]}")
+
+FMT="%${W_NDX}s %${W_IFACE}s %${W_PHY}s %${W_DRIVER}s %${W_MODE}s %${W_UP}s %${W_CHANNEL}s %${W_WIDTH}s %${W_CENTER}s %${W_PACKETS}s"
+if [ "${calcdeltapkts}" = true ]; then
+	W_DELTAP=$(colwidth DeltaP "${DELTAP[@]}")
+	FMT="${FMT} %${W_DELTAP}s"
+fi
+FMT="${FMT}  %s\n"
 
 echo
 if [ "${calcdeltapkts}" = true ]; then
 	header=(Ndx Iface Phy Driver Mode Up Channel Width Center Packets DeltaP Adapter)
-	printf "%3s %9s %5s %12s %10s %3s %13s %6s %8s %11s %6s  %s\n" "${header[@]}"
 else
 	header=(Ndx Iface Phy Driver Mode Up Channel Width Center Packets Adapter)
-	printf "%3s %9s %5s %12s %10s %3s %13s %6s %8s %11s  %s\n" "${header[@]}"
 fi
-for i in "${strOUTPUT[@]}"; do echo -e "$i"; done
+printf "$FMT" "${header[@]}"
+
+for i in "${!IFACES[@]}"; do
+	if [ "${calcdeltapkts}" = true ]; then
+		printf "$FMT" "$i" "${IFACES[$i]}" "${WIPHY[$i]}" "${DRIVER[$i]}" "${MODE[$i]}" "${UP[$i]}" "${CHANNEL[$i]}" "${WIDTH[$i]}" "${CENTER[$i]}" "${PACKETS[$i]}" "${DELTAP[$i]}" "${ADAPTER[$i]}"
+	else
+		printf "$FMT" "$i" "${IFACES[$i]}" "${WIPHY[$i]}" "${DRIVER[$i]}" "${MODE[$i]}" "${UP[$i]}" "${CHANNEL[$i]}" "${WIDTH[$i]}" "${CENTER[$i]}" "${PACKETS[$i]}" "${ADAPTER[$i]}"
+	fi
+done

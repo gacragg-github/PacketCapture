@@ -18,11 +18,29 @@
 #
 #				Ver		Date		Notes
 #Version:		0		10/2022		Orig
+#				1		08/2026		Require -x to make changes (bare/-x-less invocation just
+#								prints help); idempotent per-adapter - a phy already in
+#								monitor mode is left alone and reported, not reconfigured.
+#				2		08/2026		Idempotency also covers channel/freq: only newly
+#								(re)configured adapters get retuned, so a repeat run no
+#								longer resets an already-monitor-mode phy's channel back
+#								to the default. -r still retunes all selected adapters,
+#								since that's its whole purpose.
+#				3		08/2026		Fixed ethtool -i getting two interface names (and thus
+#								failing) on phys with a separate monitor sibling - now
+#								uses the monitor interface when one exists. Added -F to
+#								print each adapter's firmware version (ethtool -i).
+#				4		08/2026		-F alone (no -x) is now a read-only report and needs
+#								neither -x nor root, since it only queries state.
 #
 #	THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 
 
+
+#iw/ethtool live in /usr/sbin, which isn't on a non-root user's PATH - needed since -F
+#(read-only) is meant to run without sudo
+export PATH="${PATH}:/usr/sbin:/sbin"
 
 #Defaults
 regdomain="KR"
@@ -30,39 +48,56 @@ chndefault="6 HT20"
 freqdefault="6935 160 6985"
 setchnonly=0
 resetusb=0
+showfirmware=0
 
 #Help
 usage () {
 	echo "Configure adapters for monitor mode"
-	echo "Usage: $0 [-i phyX] [-c 'channel string'] [-f 'freq string']"
-	echo "Options: (all optional)"
+	echo "Usage: $0 -x [-i phyX] [-c 'channel string'] [-f 'freq string']"
+	echo "Options:"
+	echo -e "  -x                   Execute the reconfiguration (required; without it, this help is shown and nothing is changed)"
 	echo -e "  -h                   help"
 	echo -e "  -i phyX              phy to convert   Default: all"
 	echo -e "  -c 'channel string'  Channel config   Default: '${chndefault}' (priority)"
 	echo -e "  -f 'freq string'     Freq config      Default: '${freqdefault}'"
 	echo -e "  -r                   Only set channel/freq"
 	echo -e "  -y                   Reset ykush USB"
+	echo -e "  -F                   Print firmware version (from ethtool -i) for each adapter - read-only, works without -x"
 	echo -e	"  -d                   debug"
+	echo
+	echo "Idempotent: a phy already in monitor mode is left alone on a repeat run - reported, not reconfigured."
 }
 
-
-#Check for elevated privileges
-if [[ $(id -u) -ne 0 ]]
-then 
-	echo "Please run with elevated privileges"
-	usage
-	exit 1
-fi
+#Does phy index $1 already have an interface up in monitor mode? Echoes its name if so.
+#Defined this early so the read-only -F report (below, no -x/root needed) can use it.
+phy_has_monitor () {
+	local target_idx=$1 ifc wiphy mode
+	for ifc in $(iw dev | awk '/Interface/ {print $2}')
+	do
+		wiphy=$(iw dev "${ifc}" info 2>/dev/null | awk '/wiphy/ {print $2}')
+		[ "${wiphy}" == "${target_idx}" ] || continue
+		mode=$(iw dev "${ifc}" info 2>/dev/null | awk '/type/ {print $2}')
+		if [ "${mode}" == "monitor" ]
+		then
+			echo "${ifc}"
+			return 0
+		fi
+	done
+	return 1
+}
 
 
 ########################################################################
 #Option handling
 
-while getopts "h?vi:c:f:ryd" opt; do
+execute=0
+while getopts "h?xvi:c:f:ryFd" opt; do
   case "$opt" in
     h|\?)
       usage
       exit 0
+      ;;
+    x)  execute=1
       ;;
     v)  verbose=1
       ;;
@@ -75,11 +110,54 @@ while getopts "h?vi:c:f:ryd" opt; do
     r)  setchnonly=1
       ;;
     y)	resetusb=1
-      ;;  
+      ;;
+    F)	showfirmware=1
+      ;;
     d)	set -x
-      ;;  
+      ;;
   esac
 done
+
+#-F alone is a read-only report (just ethtool -i/iw queries) - it needs neither -x nor root
+if [ "${showfirmware}" == 1 ] && [ "${execute}" != 1 ]
+then
+	for i in $(ls /sys/class/ieee80211/)
+	do
+		phyndex=$(cat /sys/class/ieee80211/${i}/index)
+		monif=$(phy_has_monitor "${phyndex}")
+		if [ -n "${monif}" ]
+		then
+			name="${monif}"
+		else
+			name=$(ls /sys/class/ieee80211/${i}/device/net/ | head -n1)
+		fi
+		ethinfo=$(ethtool -i ${name} 2>/dev/null)
+		driver=$(echo "${ethinfo}" | awk '/^driver:/ {print $2}')
+		firmware=$(echo "${ethinfo}" | sed -n 's/^firmware-version:[[:space:]]*//p')
+		if [ -n "${monif}" ]
+		then
+			echo "${i} / ${name} / ${driver}: fw ${firmware} (monitor mode)"
+		else
+			echo "${i} / ${name} / ${driver}: fw ${firmware}"
+		fi
+	done
+	exit 0
+fi
+
+#Without -x (including a bare invocation with no options at all), just show help and do nothing
+if [ "${execute}" != 1 ]
+then
+	usage
+	exit 0
+fi
+
+#Check for elevated privileges
+if [[ $(id -u) -ne 0 ]]
+then
+	echo "Please run with elevated privileges"
+	usage
+	exit 1
+fi
 
 #Manage settings
 allphys=0
@@ -277,23 +355,49 @@ then
 	#Set regulatory domain
 	echo "---------------------------------------------------------------------------------------------------------------"
 	echo "Configure adapter(s)"
+	newly_configured=()
 	for i in ${adapters[@]}
 	do
-		name=$(ls /sys/class/ieee80211/${i}/device/net/)
-		driver=$(ethtool -i ${name} | grep -i driver | awk '{print $2}')
-		echo "Configuring adapter ${i} / ${name} / ${driver}"
-		
-		if [ "${driver}" == "iwlwifi" ]
+		phyndex=$(cat /sys/class/ieee80211/${i}/index)
+		monif=$(phy_has_monitor "${phyndex}")
+
+		#Prefer the monitor-mode interface for reporting - a phy can have more than one
+		#net interface (e.g. iwlwifi keeps the original alongside the monitor sibling it adds),
+		#and ethtool -i only accepts a single interface name.
+		if [ -n "${monif}" ]
 		then
-			config_iwlwifi  ${i}
-		elif [ "${driver}" == "brcmfmac" ]
-		then
-			config_rpibrcm ${i} 
+			name="${monif}"
 		else
-			config_general  ${i}
+			name=$(ls /sys/class/ieee80211/${i}/device/net/ | head -n1)
+		fi
+		ethinfo=$(ethtool -i ${name} 2>/dev/null)
+		driver=$(echo "${ethinfo}" | awk '/^driver:/ {print $2}')
+		firmware=$(echo "${ethinfo}" | sed -n 's/^firmware-version:[[:space:]]*//p')
+
+		fwsuffix=""
+		if [ "${showfirmware}" == 1 ]
+		then
+			fwsuffix=" (fw: ${firmware})"
+		fi
+
+		if [ -n "${monif}" ]
+		then
+			echo "Adapter ${i} / ${name} / ${driver}${fwsuffix}: already in monitor mode (${monif}) - no change made"
+		else
+			echo "Configuring adapter ${i} / ${name} / ${driver}${fwsuffix}"
+			if [ "${driver}" == "iwlwifi" ]
+			then
+				config_iwlwifi  ${i}
+			elif [ "${driver}" == "brcmfmac" ]
+			then
+				config_rpibrcm ${i}
+			else
+				config_general  ${i}
+			fi
+			sleep 2
+			newly_configured+=("${i}")
 		fi
 		interfaces.sh
-		sleep 2
 	done
 fi
 
@@ -303,11 +407,25 @@ interfaces.sh
 
 echo "---------------------------------------------------------------------------------------------------------------"
 echo "Set channel/frequency"
-#Set channel or freq, as selected
-for i in ${adapters[@]}
-do
-	config_channelfreq ${i}
-done
+#Set channel or freq, as selected - but only for adapters actually (re)configured this run.
+#With -r (setchnonly), there was no configure step at all, so retune whatever was asked for on all of them.
+#Otherwise, leave already-in-monitor-mode adapters alone - idempotent means their channel isn't touched either.
+if [ "${setchnonly}" == 1 ]
+then
+	chanadapters=(${adapters[@]})
+else
+	chanadapters=(${newly_configured[@]})
+fi
+
+if [ "${#chanadapters[@]}" -eq 0 ]
+then
+	echo "No adapters to set - all already in monitor mode, no change made"
+else
+	for i in ${chanadapters[@]}
+	do
+		config_channelfreq ${i}
+	done
+fi
 
 echo "---------------------------------------------------------------------------------------------------------------"
 echo "Final interface configuration"
